@@ -21,16 +21,21 @@ function onClickBonusPoint() {
 const observer = new MutationObserver(onClickBonusPoint)
 
 
+// ボーナスポイントボタンのあるクラスを見つけるまでのtimer
+var timer = null
+
 // 初期化
 function init() {
+    console.log("Init")
     observer.disconnect()
 
     // tw-full-height tw-relative tw-z-aboveが存在するまで探し続ける
-    var timer = setInterval(() => {
+    timer = setInterval(() => {
         var bonuspoint_elem = document.getElementsByClassName('tw-full-height tw-relative tw-z-above')
         if (bonuspoint_elem.length > 0) {
             console.log("Found target")
             clearInterval(timer)
+            timer = null
             onClickBonusPoint()
             observer.observe(bonuspoint_elem[0], {
                 childList: true,
@@ -43,12 +48,12 @@ function init() {
 
 
 // 読み込み時のHref
-var oldHref = document.location.href;
+var oldHref = "";
 
 // 読み込まれた際の処理
 window.addEventListener('load', (event) => {
     this.console.log("onload")
-    init();
+    // init();
 
     // URL遷移の監視
     var bodyList = document.querySelector("body");
@@ -57,6 +62,10 @@ window.addEventListener('load', (event) => {
             if (oldHref != document.location.href) {
                 console.log("Change URL. Restart init.")
                 oldHref = document.location.href;
+                if (timer !== null) {
+                    clearInterval(timer)
+                    timer = null
+                }
                 init();
             }
         });
